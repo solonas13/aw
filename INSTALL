@@ -20,4 +20,4 @@ program for 64-bit integers. This requires double the amount of memory.
 After compilation the binary `aw' will be created in the working 
 directory, e.g. you may call it from this directory via
 
-./aw -a DNA -i ./data/Ec_NC_000913.fna -o ./data/Ec.out -k 8 -t 10
+./aw -a DNA -i ./data/Ec_NC_000913.fna -o ./data/Ec.out -k 8 -t -10
