@@ -67,10 +67,6 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 	DFSunvisited2=(node_type*)calloc(n,sizeof(node_type));
 	numk = sw.k;
 	numt =sw.t;
-	int nums = 0;
-	int numl = 0;
-	nums = sw.S;
-	numl = sw.L;
 	nnnn = n;
 
 

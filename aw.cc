@@ -61,8 +61,6 @@ int main(int argc, char **argv)
 
 		k       = sw . k;
 		t       = sw . t;
-		S       = sw . S;
-		L       = sw . L;
 		r       = sw . r;
 
                 input_filename          = sw . input_filename;
