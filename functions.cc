@@ -226,7 +226,7 @@ inline void find_avoid(const node_type &v, unsigned char * seq){
 			
 			else{numstd = result/max;}	
 				
-		 if(numt > numstd){	
+		 if(numt >= numstd){	
 		 	
 		 	INT findposchar=cst.sn(cst.leftmost_leaf(v));
 	
