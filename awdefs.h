@@ -16,6 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
+
+#include <sdsl/bit_vectors.hpp>
 #include <sdsl/cst_sct3.hpp>
 typedef sdsl::bp_interval<> node_type;
 
@@ -30,6 +32,9 @@ typedef sdsl::bp_interval<> node_type;
 #define max(a,b) ((a) > (b)) ? (a) : (b)
 #define min(a,b) ((a) < (b)) ? (a) : (b)
 
+using namespace sdsl;
+using namespace std;
+
 #ifdef _USE_64
 typedef int64_t INT;
 #endif
@@ -38,15 +43,24 @@ typedef int64_t INT;
 typedef int32_t INT;
 #endif
 
+typedef tuple<INT,INT,INT,INT> mytuple;
 struct TSwitch
  {
    char               * alphabet;
    char               * input_filename;
    char               * output_filename;
    unsigned int         k;
+   unsigned int         K;
    double	        t;
    unsigned int         r;
    unsigned int         total_length;
+ };
+ 
+ struct TMaw
+ {
+   INT	letter;
+   INT	pos;
+   INT 	size;
  };
 
 double gettime( void );
@@ -62,3 +76,29 @@ inline INT nodesuffix(const node_type &v);
 inline INT nodeprefix(const node_type &v);
 inline INT nodeinfix(const node_type &v);
 
+unsigned int compute_maw ( unsigned char * seq, unsigned char * seq_id, struct TSwitch sw, TMaw ** Occ, unsigned int * NOcc );
+unsigned char Mapping( int a );
+int RevMapping ( unsigned char b );
+unsigned int LCParray ( unsigned char *text, INT n, INT * SA, INT * ISA, INT * LCP );
+
+unsigned int GetBefore (
+				unsigned char * seq,
+                                INT n,
+                                int sigma,
+				INT * SA,
+                                INT * LCP,
+                                bit_vector * Before,
+                                bit_vector * Beforelcp );
+unsigned int GetMaws(
+				unsigned char * seq,
+				unsigned char * seq_id,
+				INT * SA,
+				INT n,
+				int sigma,
+				INT * LCP,
+				bit_vector * Before,
+				bit_vector * Beforelcp,
+				unsigned int k,
+				unsigned int K,
+				char * out_file,
+				TMaw ** Occ, unsigned int * NOcc );

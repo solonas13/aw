@@ -1,0 +1,33 @@
+>gi|556503834|ref|NC_000913.3| Escherichia coli str. K-12 substr. MG1655, complete genome
+.............................................
+k = 6 
+t = -10.000000 
+Avoided Words: 
+AAATTT....std: -11.068891
+AGCGCT....std: -23.572521
+AGGCCT....std: -10.445016
+ATCGAT....std: -10.503557
+CACGTG....std: -16.708414
+CAGCTG....std: -12.382949
+CCATGG....std: -12.042310
+CCCGGG....std: -16.032946
+CCGCGG....std: -19.919792
+CGGCCG....std: -19.687089
+CGTACG....std: -11.165845
+CTGCAG....std: -23.042571
+CTTCAG....std: -10.608234
+GAGACC....std: -12.143490
+GAGCCC....std: -12.331181
+GAGCTC....std: -15.488331
+GCATGC....std: -16.490166
+GCCGGC....std: -35.189930
+GCGCGC....std: -11.076529
+GGATCC....std: -13.243603
+GGCGCC....std: -43.381222
+GGGCCC....std: -15.249176
+GGGCTC....std: -11.129000
+GGTACC....std: -12.570086
+GGTCTC....std: -11.426394
+GTCGAC....std: -15.953122
+TCCGGA....std: -19.422933
+TGGCCA....std: -14.892775

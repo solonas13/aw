@@ -53,6 +53,7 @@ int decode_switches ( int argc, char * argv [], struct TSwitch * sw )
    sw -> input_filename                 = NULL;
    sw -> output_filename                = NULL;
    sw -> k                              = 5;
+   sw -> K                              = 5;
    sw -> t                              = 0;
    sw -> r                              = 0;
    args = 0;
@@ -86,6 +87,7 @@ int decode_switches ( int argc, char * argv [], struct TSwitch * sw )
               return ( 0 );
             }
            sw -> k = val;
+           sw -> K = val;
            args ++;
            break;
 
