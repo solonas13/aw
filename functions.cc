@@ -53,7 +53,7 @@ csts_t csts;
 INT nnnn;
 
 INT DFSnum2;
-INT numk = 0;
+unsigned int numk = 0;
 INT countleaf=0;
 long double numt,numstd = 0;
 node_type suffixlinknode;
@@ -84,7 +84,7 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 
         fprintf ( out_fd, ".............................................\n");
 
-        fprintf ( out_fd, "k = %ld \n", numk );
+        fprintf ( out_fd, "k = %d \n", numk );
 
         fprintf ( out_fd, "t = %LF \n", numt );
 
