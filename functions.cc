@@ -105,6 +105,10 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 	TMaw * Occ = NULL; 
  	unsigned int NOcc = 0;
 	compute_maw ( seq, seq_id, sw, &Occ, &NOcc );
+
+	//for ( int j = 0; j < NOcc; j ++ )
+	//	fprintf ( stderr, "<%c, %ld, %ld> \n", ( char ) Occ[j] . letter, Occ[j] . pos, Occ[j] . size );
+        
         end = gettime();
         fprintf( stderr, " Absent Avoided Words computation: %lf secs\n", end - start);
 
