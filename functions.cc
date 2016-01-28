@@ -101,14 +101,16 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
         end = gettime();
         fprintf( stderr, " Occuring Avoided Words computation: %lf secs\n", end - start);
 
-        start = gettime();
-	TMaw * Occ = NULL; 
- 	unsigned int NOcc = 0;
-	compute_maw ( seq, seq_id, sw, &Occ, &NOcc );
-
-	//for ( int j = 0; j < NOcc; j ++ )
-	//	fprintf ( stderr, "<%c, %ld, %ld> \n", ( char ) Occ[j] . letter, Occ[j] . pos, Occ[j] . size );
-        
+	start = gettime();
+       	TMaw * Occ = NULL;
+        unsigned int NOcc = 0;
+        std::reverse(seq, seq + n);
+        compute_maw ( seq, seq_id, sw, &Occ, &NOcc );
+        for ( int j = 0; j < NOcc; j++ )
+        {
+               Occ[j] . pos = n - 1 - ( Occ[j] . pos + Occ[j] . size - 1 );
+               //fprintf( stderr, " <%ld, %ld, %c>\n", Occ[j]. pos, Occ[j] .size, (char) Occ[j]. letter);
+        }
         end = gettime();
         fprintf( stderr, " Absent Avoided Words computation: %lf secs\n", end - start);
 
