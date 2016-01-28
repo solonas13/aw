@@ -106,6 +106,7 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
         unsigned int NOcc = 0;
         std::reverse(seq, seq + n);
         compute_maw ( seq, seq_id, sw, &Occ, &NOcc );
+        std::reverse(seq, seq + n);
         for ( int j = 0; j < NOcc; j++ )
         {
                Occ[j] . pos = n - 1 - ( Occ[j] . pos + Occ[j] . size - 1 );
