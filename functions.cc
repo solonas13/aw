@@ -72,7 +72,6 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 	numt =sw.t;
 	nnnn = n;
 
-
 	if ( ! ( out_fd = fopen ( sw . output_filename, "a") ) )
 	{
 		fprintf ( stderr, " Error: Cannot open file %s!\n", sw . output_filename );
@@ -80,15 +79,13 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 	}
 
     	/* Print the header */
-        fprintf ( out_fd, ">%s\n", ( char * ) seq_id );
+        fprintf ( out_fd, "Seq : %s\n", ( char * ) seq_id );
+        fprintf ( out_fd, "k = %d \n", numk );
+        fprintf ( out_fd, "t = %LF \n", numt );
 
         fprintf ( out_fd, ".............................................\n");
 
-        fprintf ( out_fd, "k = %d \n", numk );
-
-        fprintf ( out_fd, "t = %LF \n", numt );
-
-        fprintf ( out_fd, "Avoided Words: \n" );
+        fprintf ( out_fd, "Occuring Avoided Words: \n" );
 
         /* Compute the Compressed Suffix Tree */
         start = gettime();
@@ -101,19 +98,204 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
         end = gettime();
         fprintf( stderr, " Occuring Avoided Words computation: %lf secs\n", end - start);
 
+	if ( sw . A )
+	{
 	start = gettime();
+	char * maw;
        	TMaw * Occ = NULL;
         unsigned int NOcc = 0;
         std::reverse(seq, seq + n);
         compute_maw ( seq, seq_id, sw, &Occ, &NOcc );
         std::reverse(seq, seq + n);
+        fprintf ( out_fd, ".............................................\n");
+        fprintf ( out_fd, "Absent Avoided Words: \n" );
+
+	maw = ( char * ) calloc( ( sw . k + 1 ) , sizeof( char ) );
         for ( int j = 0; j < NOcc; j++ )
         {
                Occ[j] . pos = n - 1 - ( Occ[j] . pos + Occ[j] . size - 1 );
-               //fprintf( stderr, " <%ld, %ld, %c>\n", Occ[j]. pos, Occ[j] .size, (char) Occ[j]. letter);
+              
+               auto candidatenode = cst.root();
+               
+               auto candidateinfix = cst.root();
+               
+               auto candidatesuffix = cst.root();
+               
+               long double leavesprefix = 0;
+               
+               long double leavesinfix = 0;
+               
+               long double leavessuffix = 0;
+               
+               /*find prefix node*/
+               
+               if(cst.is_leaf(cst.child(cst.root(),seq[Occ[j]. pos]))==1){
+               	
+               	candidatenode = cst.child(cst.root(),seq[Occ[j].pos]);
+	
+               }
+               	
+               else{
+               
+               if(cst.depth(cst.child(cst.root(),seq[Occ[j].pos]))<Occ[j].size){	
+               
+               auto newnode = cst.root();
+               	
+               auto new2node = cst.root();
+               
+               do{
+                	                	
+                	new2node = cst.child(newnode,(seq[Occ[j].pos+cst.depth(newnode)]));
+                	
+                	newnode = new2node;
+                	
+                	}
+               while(cst.depth(newnode)<Occ[j].size);
+               
+               if(cst.is_leaf(newnode)==1){
+               	
+               	if(cst.depth(newnode)>(Occ[j].size)){
+               		
+               		candidatenode = newnode;
+               		
+               		leavesprefix = cst.size(candidatenode);
+
+               		}
+               	
+               	}
+               	
+               	else{
+               		
+               		candidatenode = newnode;
+               		
+               		leavesprefix = cst.size(candidatenode);
+               		
+               		}
+               
+               }
+               else{
+               	
+               	candidatenode = cst.child(cst.root(),seq[Occ[j].pos]);
+               	
+               	leavesprefix = cst.size(candidatenode);
+               		
+               	}
+           }
+           
+           /*find infix node*/
+           
+                if(cst.is_leaf(cst.child(cst.root(),seq[Occ[j]. pos+1]))==1){
+               	
+               	candidateinfix = cst.child(cst.root(),seq[Occ[j].pos+1]);
+	
+               	
+               }
+               	
+               else{
+               
+               if(cst.depth(cst.child(cst.root(),seq[Occ[j].pos+1]))<(Occ[j].size-1)){	
+               
+               auto newnode = cst.root();
+               	
+               auto new2node = cst.root();
+               
+               do{
+                	                	
+                	new2node = cst.child(newnode,(seq[Occ[j].pos+1+cst.depth(newnode)]));
+                	
+                	newnode = new2node;
+                	
+                	}
+               while(cst.depth(newnode)<(Occ[j].size-1));
+               
+               if(cst.is_leaf(newnode)==1){
+               	
+               	if(cst.depth(newnode)>(Occ[j].size-1)){
+               		
+               		candidateinfix = newnode;
+               		
+               		leavesinfix = cst.size(candidateinfix);
+               	
+               		}
+               	
+               	}
+               	
+               	else{
+               		
+               		candidateinfix = newnode;
+               		
+               		leavesinfix = cst.size(candidateinfix);
+               		
+               	}	
+               
+               }
+               else{
+               	
+               	candidateinfix = cst.child(cst.root(),seq[Occ[j].pos+1]);
+               	
+               	leavesinfix = cst.size(candidateinfix);
+ 		
+               	
+               	}
+           }
+           
+          /*find suffix node*/  
+          
+          if(cst.is_leaf(candidateinfix)==1){
+          	
+          	candidatesuffix = candidateinfix;
+          	leavessuffix = leavesinfix;	
+          	
+          }
+          else{
+          	
+          	if(cst.depth(candidateinfix)==(Occ[j].size-1)){
+          	  candidatesuffix = cst.child(candidateinfix, (const char) Occ[j]. letter);
+          	  leavessuffix = cst.size(candidatesuffix);
+          	  
+          	}
+          	else{
+          		candidatesuffix = candidateinfix;
+          	  leavessuffix = leavesinfix;
+          	 
+          		}       
+         }
+
+         /*compute std*/
+         
+         	long double absentmax = 0.0;
+	
+	        long double absentsign = sqrt((leavesprefix*leavessuffix)/leavesinfix);
+	
+	        long double absentnumstd = 0.0;
+	
+	        if(absentsign > 1){absentmax=absentsign;}else{absentmax=1;}	
+		
+		      long double absentresult = 0-((leavesprefix*leavessuffix)/leavesinfix);
+		
+		      if(absentresult==0){absentnumstd=0;}
+			
+			    else{absentnumstd = absentresult/absentmax;}
+			    	
+			    if(numt >= absentnumstd){		
+			
+			    memcpy( &maw[0], &seq[Occ[j]. pos], Occ[j] . size );	    
+			    maw[Occ[j] . size] = (char) Occ[j]. letter;		
+			    maw[Occ[j] . size + 1] = '\0';	
+			    fprintf( out_fd, "%s....", maw );
+			    //fprintf( out_fd, " <%lld, %lld, %c>....", Occ[j]. pos, Occ[j] .size, (char) Occ[j]. letter);
+
+	        fprintf ( out_fd, "std: %LF\n", absentnumstd );	 
+	        
+	        }           
+           
         }
         end = gettime();
         fprintf( stderr, " Absent Avoided Words computation: %lf secs\n", end - start);
+ 	free ( maw );      	
+	free ( Occ );
+	}
+        fprintf ( out_fd, ".............................................\n");     
 
 	if ( fclose ( out_fd ) )
 	{
@@ -122,14 +304,10 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 	}
 
 	remove( INPUT_STR );
-       	
 	free(coutfd);
-       
-       	free(DFSunvisited2);   
+        free(DFSunvisited2);   
 
-	free ( Occ );
-
-       	return ( 1 );
+ 	return ( 1 );
        	
 }
 
@@ -375,7 +553,7 @@ unsigned int compute_maw ( unsigned char * seq, unsigned char * seq_id, struct T
 
         /* Compute the suffix array */
         SA = ( INT * ) malloc( ( n ) * sizeof( INT ) );
-        if( ( SA == NULL) )
+        if( SA == NULL )
         {
                 fprintf(stderr, " Error: Cannot allocate memory for SA.\n" );
                 return ( 0 );
@@ -399,7 +577,7 @@ unsigned int compute_maw ( unsigned char * seq, unsigned char * seq_id, struct T
 
         /*Compute the inverse SA array */
         invSA = ( INT * ) calloc( n , sizeof( INT ) );
-        if( ( invSA == NULL) )
+        if( invSA == NULL )
         {
                 fprintf(stderr, " Error: Cannot allocate memory for invSA.\n" );
                 return ( 0 );
@@ -411,7 +589,7 @@ unsigned int compute_maw ( unsigned char * seq, unsigned char * seq_id, struct T
         }
 
 	LCP = ( INT * ) calloc  ( n, sizeof( INT ) );
-        if( ( LCP == NULL) )
+        if( LCP == NULL )
         {
                 fprintf(stderr, " Error: Cannot allocate memory for LCP.\n" );
                 return ( 0 );
@@ -429,13 +607,13 @@ unsigned int compute_maw ( unsigned char * seq, unsigned char * seq_id, struct T
 	INT v_size = 2 * n;
 
     	Before = new bit_vector[sigma];
-        if( ( Before == NULL) )
+        if( Before == NULL )
         {
                 fprintf(stderr, " Error: Cannot allocate memory for Before.\n" );
                 return ( 0 );
         }
 	Beforelcp = new bit_vector[sigma];
-        if( ( Beforelcp == NULL) )
+        if( Beforelcp == NULL )
         {
                 fprintf(stderr, " Error: Cannot allocate memory for BeforeLCP.\n" );
                 return ( 0 );
@@ -633,7 +811,7 @@ unsigned int GetBefore (
         for ( INT i = 0; i < sigma; i++)
                 interval[i]=bit_vector(hm,0);
 
-	interval[RevMapping(seq[n- 1])][0]=1;
+	      interval[RevMapping(seq[n- 1])][0]=1;
 
         // First pass : top-down
         for ( INT i = 0; i < n; i++ )
@@ -847,7 +1025,7 @@ unsigned int GetMaws( unsigned char * seq, unsigned char * seq_id, INT * SA, INT
 	StackDispose(&lifo_lcp);
 
         maw = ( char * ) calloc( ( K + 1 ) , sizeof( char ) );
-        if( ( maw == NULL) )
+        if( maw == NULL )
         {
                 fprintf(stderr, " Error: Cannot allocate memory.\n" );
                 return ( 0 );

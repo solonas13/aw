@@ -31,6 +31,7 @@ static struct option long_options[] =
    { "output-file",             required_argument, NULL, 'o' },
    { "length",                  required_argument, NULL, 'k' },
    { "threshold",               required_argument, NULL, 't' },
+   { "absent",                  required_argument, NULL, 'A' },
    { "reverse",                 required_argument, NULL, 'r' },
    { "help",                    no_argument,       NULL, 'h' },
    { NULL,                      0,                 NULL, 0   }
@@ -56,9 +57,10 @@ int decode_switches ( int argc, char * argv [], struct TSwitch * sw )
    sw -> K                              = 5;
    sw -> t                              = 0;
    sw -> r                              = 0;
+   sw -> A                              = 0;
    args = 0;
 
-   while ( ( opt = getopt_long ( argc, argv, "a:i:o:k:t:r:h", long_options, &oi ) ) != - 1 )
+   while ( ( opt = getopt_long ( argc, argv, "a:i:o:k:t:r:A:h", long_options, &oi ) ) != - 1 )
     {
       switch ( opt )
        {
@@ -89,6 +91,15 @@ int decode_switches ( int argc, char * argv [], struct TSwitch * sw )
            sw -> k = val;
            sw -> K = val;
            args ++;
+           break;
+
+         case 'A':
+           val = strtol ( optarg, &ep, 10 );
+           if ( optarg == ep )
+            {
+              return ( 0 );
+            }
+           sw -> A = val;
            break;
 
          case 't':
@@ -139,6 +150,8 @@ void usage ( void )
    fprintf ( stdout, "  -k, --length              <int>     The length for aws.\n");
    fprintf ( stdout, "  -t, --threshold           <dbl>     The threshold for aws.\n");
    fprintf ( stdout, " Optional:\n" );
+   fprintf ( stdout, "  -A, --absent              <int>     `1' to check for absent avoided words or\n"
+                     "                                      `0' otherwise (default: 0).\n" );
    fprintf ( stdout, "  -r, --reverse             <int>     `1' to check for the reverse complement or\n"
                      "                                      `0' otherwise (default: 0).\n" );
  }

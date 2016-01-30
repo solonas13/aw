@@ -51,6 +51,7 @@ struct TSwitch
    char               * output_filename;
    unsigned int         k;
    unsigned int         K;
+   unsigned int		A;
    double	        t;
    unsigned int         r;
    unsigned int         total_length;
