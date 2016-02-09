@@ -33,6 +33,7 @@ static struct option long_options[] =
    { "threshold",               required_argument, NULL, 't' },
    { "absent",                  required_argument, NULL, 'A' },
    { "reverse",                 required_argument, NULL, 'r' },
+   { "common",                  required_argument, NULL, 'c' },
    { "help",                    no_argument,       NULL, 'h' },
    { NULL,                      0,                 NULL, 0   }
  };
@@ -58,9 +59,10 @@ int decode_switches ( int argc, char * argv [], struct TSwitch * sw )
    sw -> t                              = 0;
    sw -> r                              = 0;
    sw -> A                              = 0;
+   sw -> c                              = 0;
    args = 0;
 
-   while ( ( opt = getopt_long ( argc, argv, "a:i:o:k:t:r:A:h", long_options, &oi ) ) != - 1 )
+   while ( ( opt = getopt_long ( argc, argv, "a:i:o:k:t:r:A:c:h", long_options, &oi ) ) != - 1 )
     {
       switch ( opt )
        {
@@ -121,6 +123,15 @@ int decode_switches ( int argc, char * argv [], struct TSwitch * sw )
            sw -> r = val;
            break;
 
+         case 'c':
+           val = strtol ( optarg, &ep, 10 );
+           if ( optarg == ep )
+            {
+              return ( 0 );
+            }
+           sw -> c = val;
+           break;
+
          case 'h':
            return ( 0 );
        }
@@ -152,6 +163,8 @@ void usage ( void )
    fprintf ( stdout, " Optional:\n" );
    fprintf ( stdout, "  -A, --absent              <int>     `1' to check for absent avoided words or\n"
                      "                                      `0' otherwise (default: 0).\n" );
+   fprintf ( stdout, "  -c, --common              <int>     `1' to check for common words instead of\n"
+                     "                                      avoided or `0' otherwise (default: 0).\n" );
    fprintf ( stdout, "  -r, --reverse             <int>     `1' to check for the reverse complement or\n"
                      "                                      `0' otherwise (default: 0).\n" );
  }

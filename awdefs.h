@@ -54,6 +54,7 @@ struct TSwitch
    unsigned int		A;
    double	        t;
    unsigned int         r;
+   unsigned int         c;
    unsigned int         total_length;
  };
  
@@ -71,7 +72,9 @@ unsigned int RevComStr ( unsigned char * str, unsigned char * str2, INT iLen );
 unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TSwitch sw );
 
 inline void compute_avoidnumk(const node_type &v, INT nuk, unsigned char * seq);
+inline void compute_frequencynumk(const node_type &v, INT nuk, unsigned char * seq);
 inline void find_avoid(const node_type &v, unsigned char * seq);
+inline void find_frequency(const node_type &v, unsigned char * seq);
 inline INT nodenow(const node_type &v);
 inline INT nodesuffix(const node_type &v);
 inline INT nodeprefix(const node_type &v);

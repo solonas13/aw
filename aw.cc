@@ -63,6 +63,25 @@ int main(int argc, char **argv)
 		t       = sw . t;
 		r       = sw . r;
 
+
+		if ( sw . c == 0 && t >= 0 )
+		{
+			fprintf ( stderr, " Error: threshold t must be strictly less than 0!\n" );
+			return ( 1 );
+		}
+
+		if ( sw . c == 1 && t <= 0 )
+		{
+			fprintf ( stderr, " Error: threshold t must be strictly greater than 0!\n" );
+			return ( 1 );
+		}
+
+		if ( sw . c == 1 && sw . A == 1 )
+		{
+			fprintf ( stderr, " Error: invalid option `-A 1'; we cannot have absent common words!\n" );
+			return ( 1 );
+		}
+
                 input_filename          = sw . input_filename;
                 output_filename         = sw . output_filename;
         }

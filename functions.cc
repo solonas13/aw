@@ -51,25 +51,28 @@ typedef bp_interval<> node_type;
 cst_t cst;
 csts_t csts;
 INT nnnn;
-
+INT DFSnum1;
 INT DFSnum2;
 unsigned int numk = 0;
 INT countleaf=0;
 long double numt,numstd = 0;
+long double numt1,numstd1 = 0;
 node_type suffixlinknode;
 
+node_type *DFSunvisited1;
 node_type *DFSunvisited2;
 FILE * out_fd;
 char * coutfd;
+char * coutfd1;
 
 unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TSwitch sw )
 {
 	double start, end;
 	INT n = strlen ( ( char * ) seq );
-	coutfd=(char*)calloc(n,sizeof(char));
-	DFSunvisited2=(node_type*)calloc(n,sizeof(node_type));
 	numk = sw.k;
-	numt =sw.t;
+	
+	numt1 = sw.t;
+	numt  = sw.t;
 	nnnn = n;
 
 	if ( ! ( out_fd = fopen ( sw . output_filename, "a") ) )
@@ -78,25 +81,46 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 		return ( 1 );
 	}
 
+	/* Compute the Compressed Suffix Tree */
+	start = gettime();
+	construct_im(cst, (const char *) seq, 1);
+	end = gettime();
+	fprintf( stderr, " Compressed Suffix Tree construction: %lf secs\n", end - start);
+
     	/* Print the header */
         fprintf ( out_fd, "Seq : %s\n", ( char * ) seq_id );
         fprintf ( out_fd, "k = %d \n", numk );
         fprintf ( out_fd, "t = %LF \n", numt );
 
-        fprintf ( out_fd, ".............................................\n");
-
-        fprintf ( out_fd, "Occuring Avoided Words: \n" );
-
-        /* Compute the Compressed Suffix Tree */
-        start = gettime();
-        construct_im(cst, (const char *) seq, 1);
-        end = gettime();
-        fprintf( stderr, " Compressed Suffix Tree construction: %lf secs\n", end - start);
-
-        start = gettime();
-        compute_avoidnumk(cst.root(), numk, seq);
-        end = gettime();
-        fprintf( stderr, " Occuring Avoided Words computation: %lf secs\n", end - start);
+	if ( sw . c == 0 )
+	{
+        	fprintf ( out_fd, ".............................................\n");
+        	fprintf ( out_fd, "Occuring Avoided Words: \n" );
+		start = gettime();
+		coutfd=(char*)calloc(n,sizeof(char));
+	        DFSunvisited2=(node_type*)calloc(n,sizeof(node_type));
+		compute_avoidnumk(cst.root(), numk, seq);
+	        free(coutfd);
+	        free(DFSunvisited2); 
+		end = gettime();
+		fprintf( stderr, " Occuring Avoided Words computation: %lf secs\n", end - start);
+	}
+        else
+	{
+        	fprintf ( out_fd, ".............................................\n");
+        	fprintf ( out_fd, "Common Words: \n" );
+		start = gettime();
+	        coutfd1=(char*)calloc(n,sizeof(char));
+	        DFSunvisited1=(node_type*)calloc(n,sizeof(node_type));
+		compute_frequencynumk(cst.root(), numk, seq);
+	        free(coutfd1);
+	        free(DFSunvisited1); 
+		end = gettime();
+		fprintf( stderr, " Common Words computation: %lf secs\n", end - start);
+	}
+        
+        if( sw . c == 0 ) 
+        { 
 
 	if ( sw . A )
 	{
@@ -295,8 +319,10 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
  	free ( maw );      	
 	free ( Occ );
 	}
-        fprintf ( out_fd, ".............................................\n");     
+        
+  }  
 
+        fprintf ( out_fd, ".............................................\n");   
 	if ( fclose ( out_fd ) )
 	{
 		fprintf( stderr, " Error: file close error!\n");
@@ -304,8 +330,6 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 	}
 
 	remove( INPUT_STR );
-	free(coutfd);
-        free(DFSunvisited2);   
 
  	return ( 1 );
        	
@@ -350,6 +374,94 @@ double gettime( void )
 };
 	
 	
+inline void compute_frequencynumk(const node_type &v, INT nuk, unsigned char * seq){
+	
+	auto Node = v;
+	
+	numk = nuk;
+	
+	DFSnum1 = 0;	
+	
+	for(auto numdegree = cst.degree(Node); numdegree>0; numdegree--){
+		
+		   auto NodeChild = cst.select_child(Node, numdegree);
+		   
+		   DFSnum1++;
+		       
+		   DFSunvisited1[DFSnum1]=NodeChild;
+		   
+	}
+	
+	while(DFSnum1!=0){
+		
+		auto DFSv1 = DFSunvisited1[DFSnum1];
+			
+		DFSnum1--;
+		
+		if(cst.is_leaf(DFSv1)==1){
+			
+			if(numk<(cst.depth(DFSv1))&&numk>(cst.depth(cst.parent(DFSv1)))){find_frequency(DFSv1, seq);}
+			
+			}
+			
+			else{
+				
+				if(numk<=(cst.depth(DFSv1))&&numk>(cst.depth(cst.parent(DFSv1)))){find_frequency(DFSv1, seq);}
+					
+					else{
+						
+						for(auto numdegree = cst.degree(DFSv1); numdegree>0; numdegree--){
+		
+		           auto NodeChild = cst.select_child(DFSv1, numdegree);
+		
+		           DFSnum1++;
+		       
+		           DFSunvisited1[DFSnum1]=NodeChild;}
+						
+						}
+				}	  
+}		
+}
+	
+inline void find_frequency(const node_type &v, unsigned char * seq){	
+	
+	
+	long double countnodenow = nodenow(v);
+	
+	long double countnodesuffix = nodesuffix(v);
+	
+	long double countnodeprefix = nodeprefix(v);
+	
+	long double countnodeinfix = nodeinfix(v);
+	
+	long double max;
+	
+	long double sign = sqrt((countnodeprefix*countnodesuffix)/countnodeinfix);
+	
+	numstd1 = 0.0;
+	
+	if(sign > 1){max=sign;}else{max=1;}	
+		
+		long double result = countnodenow-((countnodeprefix*countnodesuffix)/countnodeinfix);
+		
+		if(result==0){numstd=0;}
+			
+			else{numstd1 = result/max;}	
+				
+		 if(numt1 <= numstd1){	
+		 	
+		 	INT findposchar=cst.sn(cst.leftmost_leaf(v));
+	
+	     for(INT f=0; f<numk;f++){coutfd1[f]=seq[f+findposchar];}		
+	      
+	     fprintf ( out_fd, "%s....", (char *) coutfd1 );
+	      
+	     fprintf ( out_fd, "std: %LF\n", numstd1 );	    
+	  
+	}	
+	
+	
+}
 
 inline void compute_avoidnumk(const node_type &v, INT nuk, unsigned char * seq){
 	
