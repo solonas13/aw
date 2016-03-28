@@ -7,4 +7,4 @@ To compile AW, please follow the instructions given in file INSTALL.
 
 When publishing work that is based on the results from AW please cite:
 
-Yannis Almirantis, Jia Gao, Costas Iliopoulos, Manal Mohamed, Solon Pissis, and Dimitris Polychronopoulos. Linear-Time Computation of Avoided Words, Submitted to the Symposium of Experimental Algorithms (SEA 2016).
+Yannis Almirantis, Panagiotis Charalampopoulos, Jia Gao, Costas S. Iliopoulos, Manal Mohamed, Solon P. Pissis, and Dimitris Polychronopoulos. Optimal Computation of Avoided Words, In preparation.
