@@ -159,8 +159,8 @@ void usage ( void )
    fprintf ( stdout, "  -t, --threshold           <dbl>     The threshold for AWs.\n");
    fprintf ( stdout, " Optional:\n" );
    fprintf ( stdout, "  -k, --length              <int>     Fixed length for AWs (default: no fixed).\n");
-   fprintf ( stdout, "  -A, --absent              <int>     `1' to check for absent avoided words or\n"
-                     "                                      `0' otherwise (default: 0).\n"
+   fprintf ( stdout, "  -A, --absent              <int>     `1' to check also for absent avoided words\n"
+                     "                                      or `0' otherwise (default: 0).\n"
                      "                                      This option cannot be used with `-c 1'.\n" );
    fprintf ( stdout, "  -c, --common              <int>     `1' to check for common words instead of\n"
                      "                                      avoided or `0' otherwise (default: 0).\n"

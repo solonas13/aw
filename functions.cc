@@ -39,7 +39,7 @@
 #include <cmath>
 #include <string>
 #include <sdsl/bit_vectors.hpp>					  // include header for bit vectors
-#include "stack.h"        					  // include header for stack structure
+#include "stack.h"
 
 using namespace sdsl;
 using namespace std;
