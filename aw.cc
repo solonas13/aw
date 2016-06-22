@@ -37,7 +37,7 @@ int main(int argc, char **argv)
         unsigned int    num_seqs = 0;           // the total number of sequences considered
 	char *          alphabet;               // the alphabet
 	unsigned int    i, j;
-	unsigned int    k, S, L, r;	
+	unsigned int    S, L, r;	
 	double		t;
 
 	/* Decodes the arguments */
@@ -59,7 +59,6 @@ int main(int argc, char **argv)
                         return ( 1 );
                 }
 
-		k       = sw . k;
 		t       = sw . t;
 		r       = sw . r;
 
@@ -67,6 +66,12 @@ int main(int argc, char **argv)
 		if ( sw . c == 0 && t >= 0 )
 		{
 			fprintf ( stderr, " Error: threshold t must be strictly less than 0!\n" );
+			return ( 1 );
+		}
+
+		if ( sw . c == 1 && sw . k == 0 )
+		{
+			fprintf ( stderr, " Error: option `-c 1' must used with option `-k <int>'!\n" );
 			return ( 1 );
 		}
 

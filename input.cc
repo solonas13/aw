@@ -54,8 +54,8 @@ int decode_switches ( int argc, char * argv [], struct TSwitch * sw )
    sw -> alphabet                       = NULL;
    sw -> input_filename                 = NULL;
    sw -> output_filename                = NULL;
-   sw -> k                              = 5;
-   sw -> K                              = 5;
+   sw -> k                              = 0;
+   sw -> K                              = 0;
    sw -> t                              = 0;
    sw -> r                              = 0;
    sw -> A                              = 0;
@@ -91,8 +91,6 @@ int decode_switches ( int argc, char * argv [], struct TSwitch * sw )
               return ( 0 );
             }
            sw -> k = val;
-           sw -> K = val;
-           args ++;
            break;
 
          case 'A':
@@ -137,7 +135,7 @@ int decode_switches ( int argc, char * argv [], struct TSwitch * sw )
        }
     }
 
-   if ( args < 5 )
+   if ( args < 4 )
      {
        usage ();
        exit ( 1 );
@@ -158,13 +156,15 @@ void usage ( void )
                      "                                      for protein  sequences. \n" );
    fprintf ( stdout, "  -i, --input-file          <str>     (Multi)FASTA input filename.\n" );
    fprintf ( stdout, "  -o, --output-file         <str>     Output filename.\n" );
-   fprintf ( stdout, "  -k, --length              <int>     The length for aws.\n");
-   fprintf ( stdout, "  -t, --threshold           <dbl>     The threshold for aws.\n");
+   fprintf ( stdout, "  -t, --threshold           <dbl>     The threshold for AWs.\n");
    fprintf ( stdout, " Optional:\n" );
+   fprintf ( stdout, "  -k, --length              <int>     Fixed length for AWs (default: no fixed).\n");
    fprintf ( stdout, "  -A, --absent              <int>     `1' to check for absent avoided words or\n"
-                     "                                      `0' otherwise (default: 0).\n" );
+                     "                                      `0' otherwise (default: 0).\n"
+                     "                                      This option cannot be used with `-c 1'.\n" );
    fprintf ( stdout, "  -c, --common              <int>     `1' to check for common words instead of\n"
-                     "                                      avoided or `0' otherwise (default: 0).\n" );
+                     "                                      avoided or `0' otherwise (default: 0).\n"
+                     "                                      This option can only be used with `-k <int>'.\n" );
    fprintf ( stdout, "  -r, --reverse             <int>     `1' to check for the reverse complement or\n"
                      "                                      `0' otherwise (default: 0).\n" );
  }

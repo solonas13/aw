@@ -79,8 +79,9 @@ inline INT nodenow(const node_type &v);
 inline INT nodesuffix(const node_type &v);
 inline INT nodeprefix(const node_type &v);
 inline INT nodeinfix(const node_type &v);
+inline void compute_all_of_occuring_avoided_words(const node_type &v, unsigned char * seq);	
 
-unsigned int compute_maw ( unsigned char * seq, unsigned char * seq_id, struct TSwitch sw, TMaw ** Occ, unsigned int * NOcc );
+unsigned int compute_maw ( unsigned char * seq, unsigned char * seq_id, struct TSwitch sw, TMaw ** Occ, INT * NOcc );
 unsigned char Mapping( int a );
 int RevMapping ( unsigned char b );
 unsigned int LCParray ( unsigned char *text, INT n, INT * SA, INT * ISA, INT * LCP );
@@ -105,4 +106,4 @@ unsigned int GetMaws(
 				unsigned int k,
 				unsigned int K,
 				char * out_file,
-				TMaw ** Occ, unsigned int * NOcc );
+				TMaw ** Occ, INT * NOcc );

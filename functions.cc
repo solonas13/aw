@@ -61,9 +61,12 @@ node_type suffixlinknode;
 
 node_type *DFSunvisited1;
 node_type *DFSunvisited2;
+node_type *DFSunvisitedall;
+
 FILE * out_fd;
 char * coutfd;
 char * coutfd1;
+char * coutfdall;
 
 unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TSwitch sw )
 {
@@ -86,243 +89,270 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 	construct_im(cst, (const char *) seq, 1);
 	end = gettime();
 	fprintf( stderr, " Compressed Suffix Tree construction: %lf secs\n", end - start);
-
-    	/* Print the header */
-        fprintf ( out_fd, "Seq : %s\n", ( char * ) seq_id );
-        fprintf ( out_fd, "k = %d \n", numk );
-        fprintf ( out_fd, "t = %LF \n", numt );
-
-	if ( sw . c == 0 )
+	
+	/* Compute all of AWs */
+	if ( sw . k == 0 )
 	{
-        	fprintf ( out_fd, ".............................................\n");
-        	fprintf ( out_fd, "Occuring Avoided Words: \n" );
-		start = gettime();
-		coutfd=(char*)calloc(n,sizeof(char));
-	        DFSunvisited2=(node_type*)calloc(n,sizeof(node_type));
-		compute_avoidnumk(cst.root(), numk, seq);
-	        free(coutfd);
-	        free(DFSunvisited2); 
+		fprintf ( out_fd, "Seq : %s\n", ( char * ) seq_id );
+		fprintf ( out_fd, "t = %LF \n", numt );
+		fprintf ( out_fd, ".............................................\n");
+		fprintf ( out_fd, "Occuring Avoided Words: \n" );
+		coutfdall=(char*)calloc(n,sizeof(char));
+		DFSunvisitedall=(node_type*)calloc(n,sizeof(node_type));
+		compute_all_of_occuring_avoided_words(cst.root(), seq);	
+		free(coutfdall);
+		free(DFSunvisitedall); 
 		end = gettime();
 		fprintf( stderr, " Occuring Avoided Words computation: %lf secs\n", end - start);
 	}
-        else
+	else /* Compute words of fixed length k*/
 	{
-        	fprintf ( out_fd, ".............................................\n");
-        	fprintf ( out_fd, "Common Words: \n" );
-		start = gettime();
-	        coutfd1=(char*)calloc(n,sizeof(char));
-	        DFSunvisited1=(node_type*)calloc(n,sizeof(node_type));
-		compute_frequencynumk(cst.root(), numk, seq);
-	        free(coutfd1);
-	        free(DFSunvisited1); 
-		end = gettime();
-		fprintf( stderr, " Common Words computation: %lf secs\n", end - start);
+		fprintf ( out_fd, "Seq : %s\n", ( char * ) seq_id );
+		fprintf ( out_fd, "k = %d \n", numk );
+		fprintf ( out_fd, "t = %LF \n", numt );
+
+		if ( sw . c == 0 )
+		{
+			fprintf ( out_fd, ".............................................\n");
+			fprintf ( out_fd, "Occuring Avoided Words: \n" );
+			start = gettime();
+			coutfd=(char*)calloc(n,sizeof(char));
+			DFSunvisited2=(node_type*)calloc(n,sizeof(node_type));
+			compute_avoidnumk(cst.root(), numk, seq);
+			free(coutfd);
+			free(DFSunvisited2); 
+			end = gettime();
+			fprintf( stderr, " Occuring Avoided Words computation: %lf secs\n", end - start);
+		}
+		else
+		{
+			fprintf ( out_fd, ".............................................\n");
+			fprintf ( out_fd, "Common Words: \n" );
+			start = gettime();
+			coutfd1=(char*)calloc(n,sizeof(char));
+			DFSunvisited1=(node_type*)calloc(n,sizeof(node_type));
+			compute_frequencynumk(cst.root(), numk, seq);
+			free(coutfd1);
+			free(DFSunvisited1); 
+			end = gettime();
+			fprintf( stderr, " Common Words computation: %lf secs\n", end - start);
+		}
 	}
-        
+	
         if( sw . c == 0 ) 
         { 
 
-	if ( sw . A )
-	{
-	start = gettime();
-	char * maw;
-       	TMaw * Occ = NULL;
-        unsigned int NOcc = 0;
-        std::reverse(seq, seq + n);
-        compute_maw ( seq, seq_id, sw, &Occ, &NOcc );
-        std::reverse(seq, seq + n);
-        fprintf ( out_fd, ".............................................\n");
-        fprintf ( out_fd, "Absent Avoided Words: \n" );
+		if ( sw . A )
+		{
+			start = gettime();
+			TMaw * Occ = NULL;
+			INT NOcc = 0;
+			std::reverse(seq, seq + n);
+			if ( sw . k == 0 )
+			{
+				sw . k = 2;
+				sw . K = n;
+			}
+			else
+			{
+				sw . K = sw . k;
+			}
+			compute_maw ( seq, seq_id, sw, &Occ, &NOcc );
+			std::reverse(seq, seq + n);
+			fprintf ( out_fd, ".............................................\n");
+			fprintf ( out_fd, "Absent Avoided Words: \n" );
 
-	maw = ( char * ) calloc( ( sw . k + 1 ) , sizeof( char ) );
-        for ( int j = 0; j < NOcc; j++ )
-        {
-               Occ[j] . pos = n - 1 - ( Occ[j] . pos + Occ[j] . size - 1 );
-              
-               auto candidatenode = cst.root();
-               
-               auto candidateinfix = cst.root();
-               
-               auto candidatesuffix = cst.root();
-               
-               long double leavesprefix = 0;
-               
-               long double leavesinfix = 0;
-               
-               long double leavessuffix = 0;
-               
-               /*find prefix node*/
-               
-               if(cst.is_leaf(cst.child(cst.root(),seq[Occ[j]. pos]))==1){
-               	
-               	candidatenode = cst.child(cst.root(),seq[Occ[j].pos]);
-	
-               }
-               	
-               else{
-               
-               if(cst.depth(cst.child(cst.root(),seq[Occ[j].pos]))<Occ[j].size){	
-               
-               auto newnode = cst.root();
-               	
-               auto new2node = cst.root();
-               
-               do{
-                	                	
-                	new2node = cst.child(newnode,(seq[Occ[j].pos+cst.depth(newnode)]));
-                	
-                	newnode = new2node;
-                	
-                	}
-               while(cst.depth(newnode)<Occ[j].size);
-               
-               if(cst.is_leaf(newnode)==1){
-               	
-               	if(cst.depth(newnode)>(Occ[j].size)){
-               		
-               		candidatenode = newnode;
-               		
-               		leavesprefix = cst.size(candidatenode);
+			for ( INT j = 0; j < NOcc; j++ )
+			{
+			       char * maw = ( char * ) calloc( ( Occ[j] . size + 2 ) , sizeof( char ) );
 
-               		}
-               	
-               	}
-               	
-               	else{
-               		
-               		candidatenode = newnode;
-               		
-               		leavesprefix = cst.size(candidatenode);
-               		
-               		}
-               
-               }
-               else{
-               	
-               	candidatenode = cst.child(cst.root(),seq[Occ[j].pos]);
-               	
-               	leavesprefix = cst.size(candidatenode);
-               		
-               	}
-           }
-           
-           /*find infix node*/
-           
-                if(cst.is_leaf(cst.child(cst.root(),seq[Occ[j]. pos+1]))==1){
-               	
-               	candidateinfix = cst.child(cst.root(),seq[Occ[j].pos+1]);
-	
-               	
-               }
-               	
-               else{
-               
-               if(cst.depth(cst.child(cst.root(),seq[Occ[j].pos+1]))<(Occ[j].size-1)){	
-               
-               auto newnode = cst.root();
-               	
-               auto new2node = cst.root();
-               
-               do{
-                	                	
-                	new2node = cst.child(newnode,(seq[Occ[j].pos+1+cst.depth(newnode)]));
-                	
-                	newnode = new2node;
-                	
-                	}
-               while(cst.depth(newnode)<(Occ[j].size-1));
-               
-               if(cst.is_leaf(newnode)==1){
-               	
-               	if(cst.depth(newnode)>(Occ[j].size-1)){
-               		
-               		candidateinfix = newnode;
-               		
-               		leavesinfix = cst.size(candidateinfix);
-               	
-               		}
-               	
-               	}
-               	
-               	else{
-               		
-               		candidateinfix = newnode;
-               		
-               		leavesinfix = cst.size(candidateinfix);
-               		
-               	}	
-               
-               }
-               else{
-               	
-               	candidateinfix = cst.child(cst.root(),seq[Occ[j].pos+1]);
-               	
-               	leavesinfix = cst.size(candidateinfix);
- 		
-               	
-               	}
-           }
-           
-          /*find suffix node*/  
-          
-          if(cst.is_leaf(candidateinfix)==1){
-          	
-          	candidatesuffix = candidateinfix;
-          	leavessuffix = leavesinfix;	
-          	
-          }
-          else{
-          	
-          	if(cst.depth(candidateinfix)==(Occ[j].size-1)){
-          	  candidatesuffix = cst.child(candidateinfix, (const char) Occ[j]. letter);
-          	  leavessuffix = cst.size(candidatesuffix);
-          	  
-          	}
-          	else{
-          		candidatesuffix = candidateinfix;
-          	  leavessuffix = leavesinfix;
-          	 
-          		}       
-         }
-
-         /*compute std*/
-         
-         	long double absentmax = 0.0;
-	
-	        long double absentsign = sqrt((leavesprefix*leavessuffix)/leavesinfix);
-	
-	        long double absentnumstd = 0.0;
-	
-	        if(absentsign > 1){absentmax=absentsign;}else{absentmax=1;}	
-		
-		      long double absentresult = 0-((leavesprefix*leavessuffix)/leavesinfix);
-		
-		      if(absentresult==0){absentnumstd=0;}
+			       Occ[j] . pos = n - 1 - ( Occ[j] . pos + Occ[j] . size - 1 );
+			      
+			       auto candidatenode = cst.root();
+			       
+			       auto candidateinfix = cst.root();
+			       
+			       auto candidatesuffix = cst.root();
+			       
+			       long double leavesprefix = 0;
+			       
+			       long double leavesinfix = 0;
+			       
+			       long double leavessuffix = 0;
+			       
+			       /*find prefix node*/
+			       
+			       if(cst.is_leaf(cst.child(cst.root(),seq[Occ[j]. pos]))==1){
+				
+				candidatenode = cst.child(cst.root(),seq[Occ[j].pos]);
 			
-			    else{absentnumstd = absentresult/absentmax;}
-			    	
-			    if(numt >= absentnumstd){		
-			
-			    memcpy( &maw[0], &seq[Occ[j]. pos], Occ[j] . size );	    
-			    maw[Occ[j] . size] = (char) Occ[j]. letter;		
-			    maw[Occ[j] . size + 1] = '\0';	
-			    fprintf( out_fd, "%s....", maw );
-			    //fprintf( out_fd, " <%lld, %lld, %c>....", Occ[j]. pos, Occ[j] .size, (char) Occ[j]. letter);
+			       }
+				
+			       else{
+			       
+			       if(cst.depth(cst.child(cst.root(),seq[Occ[j].pos]))<Occ[j].size){	
+			       
+			       auto newnode = cst.root();
+				
+			       auto new2node = cst.root();
+			       
+			       do{
+								
+					new2node = cst.child(newnode,(seq[Occ[j].pos+cst.depth(newnode)]));
+					
+					newnode = new2node;
+					
+					}
+			       while(cst.depth(newnode)<Occ[j].size);
+			       
+			       if(cst.is_leaf(newnode)==1){
+				
+				if(cst.depth(newnode)>(Occ[j].size)){
+					
+					candidatenode = newnode;
+					
+					leavesprefix = cst.size(candidatenode);
 
-	        fprintf ( out_fd, "std: %LF\n", absentnumstd );	 
-	        
-	        }           
-           
-        }
-        end = gettime();
-        fprintf( stderr, " Absent Avoided Words computation: %lf secs\n", end - start);
- 	free ( maw );      	
-	free ( Occ );
-	}
+					}
+				
+				}
+				
+				else{
+					
+					candidatenode = newnode;
+					
+					leavesprefix = cst.size(candidatenode);
+					
+					}
+			       
+			       }
+			       else{
+				
+				candidatenode = cst.child(cst.root(),seq[Occ[j].pos]);
+				
+				leavesprefix = cst.size(candidatenode);
+					
+				}
+			   }
+			   
+			   /*find infix node*/
+			   
+				if(cst.is_leaf(cst.child(cst.root(),seq[Occ[j]. pos+1]))==1){
+				
+				candidateinfix = cst.child(cst.root(),seq[Occ[j].pos+1]);
+			
+				
+			       }
+				
+			       else{
+			       
+			       if(cst.depth(cst.child(cst.root(),seq[Occ[j].pos+1]))<(Occ[j].size-1)){	
+			       
+			       auto newnode = cst.root();
+				
+			       auto new2node = cst.root();
+			       
+			       do{
+								
+					new2node = cst.child(newnode,(seq[Occ[j].pos+1+cst.depth(newnode)]));
+					
+					newnode = new2node;
+					
+					}
+			       while(cst.depth(newnode)<(Occ[j].size-1));
+			       
+			       if(cst.is_leaf(newnode)==1){
+				
+				if(cst.depth(newnode)>(Occ[j].size-1)){
+					
+					candidateinfix = newnode;
+					
+					leavesinfix = cst.size(candidateinfix);
+				
+					}
+				
+				}
+				
+				else{
+					
+					candidateinfix = newnode;
+					
+					leavesinfix = cst.size(candidateinfix);
+					
+				}	
+			       
+			       }
+			       else{
+				
+				candidateinfix = cst.child(cst.root(),seq[Occ[j].pos+1]);
+				
+				leavesinfix = cst.size(candidateinfix);
+				
+				
+				}
+			   }
+			   
+			  /*find suffix node*/  
+			  
+			  if(cst.is_leaf(candidateinfix)==1){
+				
+				candidatesuffix = candidateinfix;
+				leavessuffix = leavesinfix;	
+				
+			  }
+			  else{
+				
+				if(cst.depth(candidateinfix)==(Occ[j].size-1)){
+				  candidatesuffix = cst.child(candidateinfix, (const char) Occ[j]. letter);
+				  leavessuffix = cst.size(candidatesuffix);
+				  
+				}
+				else{
+					candidatesuffix = candidateinfix;
+				  leavessuffix = leavesinfix;
+				 
+					}       
+			 }
+
+			 /*compute std*/
+			 
+				long double absentmax = 0.0;
+			
+				long double absentsign = sqrt((leavesprefix*leavessuffix)/leavesinfix);
+			
+				long double absentnumstd = 0.0;
+			
+				if(absentsign > 1){absentmax=absentsign;}else{absentmax=1;}	
+				
+				      long double absentresult = 0-((leavesprefix*leavessuffix)/leavesinfix);
+				
+				      if(absentresult==0){absentnumstd=0;}
+					
+					    else{absentnumstd = absentresult/absentmax;}
+						
+					    if(numt >= absentnumstd){		
+					
+					    memcpy( &maw[0], &seq[Occ[j]. pos], Occ[j] . size );	    
+					    maw[Occ[j] . size] = (char) Occ[j]. letter;		
+					    maw[Occ[j] . size + 1] = '\0';	
+					    fprintf( out_fd, "%s....", maw );
+					    //fprintf( out_fd, " <%lld, %lld, %c>....", Occ[j]. pos, Occ[j] .size, (char) Occ[j]. letter);
+
+				fprintf ( out_fd, "std: %LF\n", absentnumstd );	 
+				
+				}           
+			   
+			free ( maw );      	
+			}
+			end = gettime();
+			fprintf( stderr, " Absent Avoided Words computation: %lf secs\n", end - start);
+			free ( Occ );
+		}
+		
+	}  
+
+        fprintf ( out_fd, ".............................................\n");  
         
-  }  
-
-        fprintf ( out_fd, ".............................................\n");   
 	if ( fclose ( out_fd ) )
 	{
 		fprintf( stderr, " Error: file close error!\n");
@@ -331,8 +361,7 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 
 	remove( INPUT_STR );
 
- 	return ( 1 );
-       	
+ 	return ( 1 );       	
 }
 
 
@@ -650,7 +679,7 @@ unsigned int LCParray ( unsigned char *text, INT n, INT * SA, INT * ISA, INT * L
 	return ( 1 );
 }
 
-unsigned int compute_maw ( unsigned char * seq, unsigned char * seq_id, struct TSwitch sw, TMaw ** Occ, unsigned int * NOcc )
+unsigned int compute_maw ( unsigned char * seq, unsigned char * seq_id, struct TSwitch sw, TMaw ** Occ, INT * NOcc )
 {
 	INT * SA;
 	INT * LCP;
@@ -1105,7 +1134,7 @@ unsigned int GetBefore (
 	return ( 1 );
 }
 
-unsigned int GetMaws( unsigned char * seq, unsigned char * seq_id, INT * SA, INT n, int sigma, INT * LCP, bit_vector* Before, bit_vector* Beforelcp, unsigned int k, unsigned int K, char * out_file, TMaw ** Occ, unsigned int * NOcc )
+unsigned int GetMaws( unsigned char * seq, unsigned char * seq_id, INT * SA, INT n, int sigma, INT * LCP, bit_vector* Before, bit_vector* Beforelcp, unsigned int k, unsigned int K, char * out_file, TMaw ** Occ, INT * NOcc )
 {
     	FILE * out_fd;
 	char * maw;
@@ -1210,3 +1239,197 @@ unsigned int GetMaws( unsigned char * seq, unsigned char * seq_id, INT * SA, INT
 	return ( 1 );
 }
 
+////////////////////////////////////////////////////////////////////
+
+inline void compute_all_of_occuring_avoided_words(const node_type &v, unsigned char * seq){
+	
+	auto Node = v;	
+	auto SuffixNode=cst.root();
+	
+	INT DFSall = 0;
+	INT findposchar1;		
+	INT f1;	
+	INT countleafprefix=0;
+  INT countleafcurrent=0;
+  INT countleafinfix=0;
+  INT countleafsuffix=0;
+  
+  long double countnodenow1;
+  long double countnodesuffix1;
+	long double countnodeprefix1;
+	long double countnodeinfix1; 	
+	long double max1 = 0.0;
+  long double sign1 = 0.0;
+  long double result1 = 0.0;
+  long double numstd1 = 0.0;
+	
+	for(auto num_degree_all_1 = cst.degree(Node); num_degree_all_1>0; num_degree_all_1--){
+		
+	    auto NodeChild1 = cst.select_child(Node, num_degree_all_1);
+	    
+	    if((cst.is_leaf(NodeChild1)==0)&&(cst.depth(NodeChild1)>1)){
+			
+			    DFSall++;
+		       
+		      DFSunvisitedall[DFSall]=NodeChild1; 
+	                
+	    }
+	    
+	    if((cst.is_leaf(NodeChild1)==0)&&(cst.depth(NodeChild1)==1)){
+	    	
+	    	  for(auto num_degree_all_2 = cst.degree(NodeChild1); num_degree_all_2>0; num_degree_all_2--){
+		
+		          auto NodeChild2 = cst.select_child(NodeChild1, num_degree_all_2);
+		          
+		          if(cst.is_leaf(NodeChild2)==0){
+			
+			            DFSall++;
+		       
+		              DFSunvisitedall[DFSall]=NodeChild2; 
+		              
+		          }
+	                
+	        }
+	            
+	    }
+	         
+  }
+	   
+	            
+	while(DFSall!=0){
+		
+	     auto DFSallnode = DFSunvisitedall[DFSall];
+			
+	     DFSall--;
+			
+			 auto PrefixNode = DFSallnode;
+			 
+			 countleafprefix = 0;
+			 
+		   countleafprefix = cst.size(PrefixNode);
+		   
+		   auto InfixNode = cst.sl(PrefixNode);
+		   
+		   countleafinfix = 0;
+		   
+		   if(InfixNode==cst.root()){countleafinfix = 0;}
+		   	
+		   	else{countleafinfix = cst.size(InfixNode);}
+			
+			 for(auto num_degree_all_3 = cst.degree(PrefixNode); num_degree_all_3>0; num_degree_all_3--){
+		
+		       auto NodeChild3 = cst.select_child(PrefixNode, num_degree_all_3);
+		   
+		       auto CurrentNode = NodeChild3;
+		        
+		       if((cst.is_leaf(CurrentNode)==1)&&(((cst.depth(CurrentNode))-(cst.depth(PrefixNode)))==1)){countleafcurrent = 0;}
+		              	
+		       else{
+		        
+		           countleafcurrent = 0;
+		           
+		           if(cst.is_leaf(CurrentNode)==1){countleafcurrent=1;}
+		           	else{countleafcurrent = cst.size(CurrentNode);}
+		           		
+	//method 1 to find suffix node:
+		           		
+		           		auto CandidateSuffixNode = cst.sl(CurrentNode);
+		           		
+		           		while(cst.parent(CandidateSuffixNode)!=InfixNode){CandidateSuffixNode=cst.parent(CandidateSuffixNode);}
+		           		
+		           		SuffixNode = CandidateSuffixNode;
+
+		           
+  //method 2 to find suffix node:
+  
+              // auto CharCurrent = cst.edge(CurrentNode, ((cst.depth(PrefixNode))+1));          
+		           
+		          // for(auto num_degree_all_4 = cst.degree(InfixNode); num_degree_all_4>0; num_degree_all_4--){
+		
+		          //    auto NodeChild4 = cst.select_child(InfixNode, num_degree_all_4);
+		  
+		          //    auto CandidateSuffixNode = NodeChild4;
+		              
+		          //    if(cst.edge(CandidateSuffixNode, ((cst.depth(InfixNode))+1))==CharCurrent){SuffixNode=CandidateSuffixNode;}
+		           
+		          // }
+		           
+  //method 3 to find suffi xnode: 
+ 
+                // auto CharCurrent = cst.edge(CurrentNode, ((cst.depth(PrefixNode))+1));
+		  
+		            // SuffixNode = cst.child(InfixNode, CharCurrent);
+		            
+		            //
+		        
+		           countleafsuffix = 0;
+		           
+		           if(SuffixNode==cst.root()){countleafsuffix = 0;}
+		           
+		           else if(cst.is_leaf(SuffixNode)==1){countleafsuffix=1;}
+		           	
+		           	else if(cst.is_leaf(SuffixNode)==0){countleafsuffix = cst.size(SuffixNode);}
+		           
+		           /////////formula//////////
+
+		                  countnodenow1 = countleafcurrent;
+	
+                      countnodesuffix1 = countleafsuffix;
+	
+	                    countnodeprefix1 = countleafprefix;
+	
+	                    countnodeinfix1 = countleafinfix;
+	
+	                    max1 = 0.0;
+	
+          	          sign1 = 0.0;
+          	          
+          	          sign1 = (long double)sqrt((countnodeprefix1*countnodesuffix1)/countnodeinfix1);
+	
+          	          numstd1 = 0.0;
+	
+          	          if(sign1 > 1.0){max1=sign1;}else{max1=1.0;}	
+		
+	        	          result1 = 0.0;
+	        	          
+	        	          result1 = (long double)(countnodenow1-(long double)((countnodeprefix1*countnodesuffix1)/countnodeinfix1));
+		
+	        	          if(result1==0.0){numstd1=0.0;}
+			
+	      		          else{numstd1 = ((long double)(result1/max1));}	
+				
+		                  if(numt >= numstd1){	
+		                  	
+		                  	  findposchar1=0;
+		 	
+		      	              findposchar1=cst.sn(cst.leftmost_leaf(CurrentNode));
+
+	                        for(f1=0; f1<((cst.depth(PrefixNode))+1);f1++){coutfdall[f1]=seq[f1+findposchar1];}		
+	      
+	                        fprintf ( out_fd, "%s....", (char *) coutfdall);
+	      
+	                        fprintf ( out_fd, "std: %LF\n", numstd1 );
+	                        
+	                        memset((char *)coutfdall, 0, nnnn );
+ 
+	  
+	                    }	
+	                    
+	             //
+	                    
+	             if(cst.is_leaf(CurrentNode)==0){
+		
+		               DFSall++;
+		       
+		               DFSunvisitedall[DFSall]=CurrentNode;	
+		                  
+		           }
+		              	
+		        }
+		              
+		    } 
+		       
+		}
+		  
+}
+		              
