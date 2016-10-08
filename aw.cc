@@ -69,6 +69,12 @@ int main(int argc, char **argv)
 			return ( 1 );
 		}
 
+		if ( sw . k > 0 && sw . k < 3 )
+		{
+			fprintf ( stderr, " Error: when choosing a fixed length k it must be set to k > 2!\n" );
+			return ( 1 );
+		}
+
 		if ( sw . c == 1 && sw . k == 0 )
 		{
 			fprintf ( stderr, " Error: option `-c 1' must used with option `-k <int>'!\n" );
