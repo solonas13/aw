@@ -1,7 +1,11 @@
 AW: Avoided Words
 ===
 
-GNU GPLv3 License; Copyright (C) 2016 Jia Gao and Solon P. Pissis
+Description: AW is an implementation of a linear-time and linear-space algorithm to compute all avoided words in a given DNA or proteins sequence. The definitions used for expectation and variance are described in 
+
+```
+Brendel, V., Beckmann, J.S., Trifonov, E.N.: Linguistics of nucleotide sequences: morphology and comparison of vocabularies. Journal of Biomolecular Structure and Dynamics 4(1), 11–21 (1986).
+```
 
 To compile AW, please follow the instructions given in file INSTALL.
 
@@ -30,3 +34,4 @@ When publishing work that is based on the results from AW please cite:
 ```
 Y. Almirantis, P. Charalampopoulos, J. Gao, C. S. Iliopoulos, M. Mohamed, S. P. Pissis, D. Polychronopoulos, "Optimal Computation of Avoided Words", in Algorithms in Bioinformatics: 16th International Workshop, WABI 2016, Aarhus, Denmark, August 22-24, 2016. Proceedings, M. Frith, N. C. Storm Pedersen, Eds., Springer International Publishing, 2016, pp. 1-13.
 ```
+GNU GPLv3 License; Copyright (C) 2016 Jia Gao and Solon P. Pissis
