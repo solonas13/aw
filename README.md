@@ -16,9 +16,9 @@ Brendel, V., Beckmann, J.S., Trifonov, E.N.: Linguistics of nucleotide sequences
                                       for protein  sequences. 
   -i, --input-file          <str>     (Multi)FASTA input filename.
   -o, --output-file         <str>     Output filename.
-  -t, --threshold           <dbl>     The threshold for AWs (typical: -3.0).
+  -t, --threshold           <dbl>     The threshold (typical: -3.0).
  Optional:
-  -k, --length              <int>     Fixed length for AWs (default: no fixed).
+  -k, --length              <int>     Fixed length of words (default: no fixed).
   -A, --absent              <int>     `1' to check also for absent avoided words
                                       or `0' otherwise (default: 0).
                                       This option cannot be used with `-c 1'.
