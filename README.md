@@ -4,7 +4,8 @@ AW: Avoided Words
 <b>Description</b>: AW is an implementation of a linear-time and linear-space algorithm to compute all avoided words in a given DNA or proteins sequence. The definitions used for <b>expectation</b> and <b>variance</b> are described and biologically justified in: 
 
 ```
-Brendel, V., Beckmann, J.S., Trifonov, E.N.: Linguistics of nucleotide sequences: morphology and comparison of vocabularies.
+Brendel, V., Beckmann, J.S., Trifonov, E.N.: 
+Linguistics of nucleotide sequences: morphology and comparison of vocabularies.
 Journal of Biomolecular Structure and Dynamics 4(1), 11–21 (1986).
 ```
 
