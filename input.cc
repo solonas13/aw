@@ -156,7 +156,7 @@ void usage ( void )
                      "                                      for protein  sequences. \n" );
    fprintf ( stdout, "  -i, --input-file          <str>     (Multi)FASTA input filename.\n" );
    fprintf ( stdout, "  -o, --output-file         <str>     Output filename.\n" );
-   fprintf ( stdout, "  -t, --threshold           <dbl>     The threshold for AWs.\n");
+   fprintf ( stdout, "  -t, --threshold           <dbl>     The threshold for AWs (typical: -3.0).\n");
    fprintf ( stdout, " Optional:\n" );
    fprintf ( stdout, "  -k, --length              <int>     Fixed length for AWs (default: no fixed).\n");
    fprintf ( stdout, "  -A, --absent              <int>     `1' to check also for absent avoided words\n"

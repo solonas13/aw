@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 
 		if ( sw . c == 0 && t >= 0 )
 		{
-			fprintf ( stderr, " Error: threshold t must be strictly less than 0!\n" );
+			fprintf ( stderr, " Error: threshold t must be strictly less than 0 for finding AVOIDED words!\n" );
 			return ( 1 );
 		}
 
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
 		if ( sw . c == 1 && t <= 0 )
 		{
-			fprintf ( stderr, " Error: threshold t must be strictly greater than 0!\n" );
+			fprintf ( stderr, " Error: threshold t must be strictly greater than 0 for finding COMMON words!\n" );
 			return ( 1 );
 		}
 
