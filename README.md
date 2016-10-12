@@ -34,8 +34,8 @@ Journal of Biomolecular Structure and Dynamics 4(1), 11–21 (1986).
 <b>Citation</b>:
 
 ```
-Y. Almirantis, P. Charalampopoulos, J. Gao, C. S. Iliopoulos, M. Mohamed, S. P. Pissis, D. Polychronopoulos, 
-"Optimal Computation of Avoided Words", in Algorithms in Bioinformatics: 16th International Workshop, WABI 2016, 
-Aarhus, Denmark, August 22-24, 2016. Proceedings, M. Frith, N. C. Storm Pedersen, Eds., Springer International Publishing, 2016, pp. 1-13.
+Y. Almirantis, P. Charalampopoulos, J. Gao, C. S. Iliopoulos, M. Mohamed, S. P. Pissis, D. Polychronopoulos: 
+Optimal Computation of Avoided Words. 
+WABI 2016, Springer International Publishing, 2016, pp. 1-13.
 ```
 GNU GPLv3 License; Copyright (C) 2016 Jia Gao and Solon P. Pissis
