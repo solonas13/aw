@@ -38,4 +38,4 @@ Y. Almirantis, P. Charalampopoulos, J. Gao, C. S. Iliopoulos, M. Mohamed, S. P. 
 Optimal Computation of Avoided Words. 
 WABI 2016: 1-13
 ```
-GNU GPLv3 License; Copyright (C) 2016 Jia Gao and Solon P. Pissis
+<b>License</b>: GNU GPLv3 License; Copyright (C) 2016 Jia Gao and Solon P. Pissis
