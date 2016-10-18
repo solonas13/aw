@@ -6,7 +6,7 @@ AW: Avoided Words
 ```
 V. Brendel, J.S. Beckmann, and E.N. Trifonov: 
 Linguistics of nucleotide sequences: morphology and comparison of vocabularies.
-Journal of Biomolecular Structure and Dynamics 4(1), 11–21 (1986).
+Journal of Biomolecular Structure and Dynamics 4(1), 11-21 (1986).
 ```
 
 <b>Installation</b>: To compile AW, please follow the instructions given in file INSTALL.
