@@ -75,15 +75,9 @@ int main(int argc, char **argv)
 			return ( 1 );
 		}
 
-		if ( sw . c == 1 && sw . k == 0 )
-		{
-			fprintf ( stderr, " Error: option `-c 1' must used with option `-k <int>'!\n" );
-			return ( 1 );
-		}
-
 		if ( sw . c == 1 && t <= 0 )
 		{
-			fprintf ( stderr, " Error: threshold t must be strictly greater than 0 for finding COMMON words!\n" );
+			fprintf ( stderr, " Error: threshold t must be strictly greater than 0 for finding OVERABUNDANT words!\n" );
 			return ( 1 );
 		}
 

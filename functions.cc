@@ -47,7 +47,6 @@ typedef cst_sct3<> cst_t;
 typedef cst_sada<> csts_t;
 typedef bp_interval<> node_type;
 
-
 cst_t cst;
 csts_t csts;
 INT nnnn;
@@ -55,10 +54,9 @@ INT DFSnum1;
 INT DFSnum2;
 unsigned int numk = 0;
 INT countleaf=0;
-long double numt,numstd = 0;
-long double numt1,numstd1 = 0;
+long double numt=0.0, numstd = 0.0;
+long double numt1=0.0, numstd1 = 0.0;
 node_type suffixlinknode;
-
 node_type *DFSunvisited1;
 node_type *DFSunvisited2;
 node_type *DFSunvisitedall;
@@ -93,6 +91,8 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 	/* Compute all of AWs */
 	if ( sw . k == 0 )
 	{
+		if(sw.c==0)
+			{
 		fprintf ( out_fd, "Seq : %s\n", ( char * ) seq_id );
 		fprintf ( out_fd, "t = %LF \n", numt );
 		fprintf ( out_fd, ".............................................\n");
@@ -104,6 +104,23 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 		free(DFSunvisitedall); 
 		end = gettime();
 		fprintf( stderr, " Occuring Avoided Words computation: %lf secs\n", end - start);
+	}
+	else{
+		/////////////////////////////////////////////////////////////////////////////////////////
+		/* compute all of overabundant words */
+		fprintf ( out_fd, "Seq : %s\n", ( char * ) seq_id );
+		fprintf ( out_fd, "t = %LF \n", numt );
+		fprintf ( out_fd, ".............................................\n");
+		fprintf ( out_fd, "Overabundant Words: \n" );
+		coutfdall=(char*)calloc(n,sizeof(char));
+		DFSunvisitedall=(node_type*)calloc(n,sizeof(node_type));
+		compute_all_of_overabundant_words(cst.root(), seq);	
+		free(coutfdall);
+		free(DFSunvisitedall);
+		end = gettime();
+		fprintf( stderr, " Overabundant Words computation: %lf secs\n", end - start);
+		/////////////////////////////////////////////////////////////////////////////////////////
+		}
 	}
 	else /* Compute words of fixed length k*/
 	{
@@ -127,7 +144,7 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 		else
 		{
 			fprintf ( out_fd, ".............................................\n");
-			fprintf ( out_fd, "Common Words: \n" );
+			fprintf ( out_fd, "Overabundant Words: \n" );
 			start = gettime();
 			coutfd1=(char*)calloc(n,sizeof(char));
 			DFSunvisited1=(node_type*)calloc(n,sizeof(node_type));
@@ -135,7 +152,7 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 			free(coutfd1);
 			free(DFSunvisited1); 
 			end = gettime();
-			fprintf( stderr, " Common Words computation: %lf secs\n", end - start);
+			fprintf( stderr, " Overabundant Words computation: %lf secs\n", end - start);
 		}
 	}
 	
@@ -402,7 +419,7 @@ double gettime( void )
     return ttime.tv_sec + ttime.tv_usec * 0.000001;
 };
 	
-	
+
 inline void compute_frequencynumk(const node_type &v, INT nuk, unsigned char * seq){
 	
 	auto Node = v;
@@ -1430,6 +1447,301 @@ inline void compute_all_of_occuring_avoided_words(const node_type &v, unsigned c
 		    } 
 		       
 		}
-		  
+	
 }
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+inline void compute_all_of_overabundant_words(const node_type &v, unsigned char * seq){	
+	
+	INT DFSall = 0;
+	
+	auto Node = v;
+	auto PrefixNode=v;
+	auto TempPrefixNode=v;
+	auto CurrentNode=v;
+	auto InfixNode=v;
+	auto TempInfixNode=v;	
+	auto SuffixNode=v;
+	auto TempSuffixNode=v;
+	
+	for(auto num_degree_all_1 = cst.degree(Node); num_degree_all_1>0; num_degree_all_1--){
+		
+	    auto NodeChild1 = cst.select_child(Node, num_degree_all_1);
+	    
+	    ///NodeChild1 is a leaf && parent of NodeChild1 is root && depth of NodeChild1 more than 3
+	    
+	    if((cst.is_leaf(NodeChild1)==1)&&(cst.depth(NodeChild1)>3)){
+	        
+	       if(cst.parent(cst.sl(NodeChild1))!=cst.root()){
+	        	
+	         	PrefixNode=NodeChild1;
+	         	CurrentNode=NodeChild1;
+	        	
+	        	//SuffixNode is not only '$'
+	        	
+	        	if(cst.depth(cst.sl(CurrentNode))-cst.depth(cst.parent(cst.sl(CurrentNode)))>1){
+	        	 	
+	            	TempSuffixNode=cst.sl(CurrentNode);
+	        	 	
+	        	  	while(cst.parent(TempSuffixNode)!=cst.root()){
+	        	 	
+	        	 	    InfixNode=cst.parent(TempSuffixNode);        	 	    
+	        	     	find_overabundant_words(seq, PrefixNode, CurrentNode, InfixNode, TempSuffixNode);
+	        	     	TempSuffixNode=cst.parent(TempSuffixNode);
+	        	 	
+	        	  	}
+	          }
+	        	 	
+	          //SuffixNode is only '$'
+	        	 	
+	        	if(cst.depth(cst.sl(CurrentNode))-cst.depth(cst.parent(cst.sl(CurrentNode)))==1){
+	        	 	
+	        	  	TempSuffixNode=cst.parent(cst.sl(CurrentNode));
+	        	 	
+	        	  	while(cst.parent(TempSuffixNode)!=cst.root()){
+	        	 	
+	        	  	  InfixNode=cst.parent(TempSuffixNode);     
+ 	        	    	find_overabundant_words(seq, PrefixNode, CurrentNode, InfixNode, TempSuffixNode);
+	        	    	TempSuffixNode=cst.parent(TempSuffixNode);
+	        	 	
+	        	  	}
+  	 	
+	        	 }
+	        	 
+	        }
+	    }
+	    
+	    //NodeChild1 is not a leaf&& depth of NodeChild1 is greater than 1    
+	    
+	    if((cst.is_leaf(NodeChild1)==0)&&(cst.depth(NodeChild1)>1)){
+			
+			    DFSall++;
+		       
+		      DFSunvisitedall[DFSall]=NodeChild1; 
+	                
+	    }
+	    
+	    //NodeChild1 is not a leaf && depth of NodeChild1 is 1
+	    
+	    if((cst.is_leaf(NodeChild1)==0)&&(cst.depth(NodeChild1)==1)){
+	    	
+	    	  for(auto num_degree_all_2 = cst.degree(NodeChild1); num_degree_all_2>0; num_degree_all_2--){
+		
+		          auto NodeChild2 = cst.select_child(NodeChild1, num_degree_all_2);
+		          
+		          if(cst.is_leaf(NodeChild2)==0){
+			
+			           DFSall++;
+		       
+		             DFSunvisitedall[DFSall]=NodeChild2; 
 		              
+		          }
+		          
+		          if((cst.is_leaf(NodeChild2)==1)&&(cst.depth(NodeChild2)>3)){ 
+		          	
+		          	 if(cst.parent(cst.sl(NodeChild2))!=cst.root()){
+	        	
+	            	    PrefixNode=NodeChild2;
+	                	CurrentNode=NodeChild2;
+	        	
+	                	//SuffixNode is not only '$'
+	        	
+	        	        if(cst.depth(cst.sl(CurrentNode))-cst.depth(cst.parent(cst.sl(CurrentNode)))>1){
+	        	 	
+	                     	TempSuffixNode=cst.sl(CurrentNode);
+	        	 	
+	        	          	while(cst.parent(TempSuffixNode)!=cst.root()){
+	        	 	
+	        	         	    InfixNode=cst.parent(TempSuffixNode); 	        	         	    
+	        	            	find_overabundant_words(seq, PrefixNode, CurrentNode, InfixNode, TempSuffixNode);
+	        	            	TempSuffixNode=cst.parent(TempSuffixNode);
+	        	 	
+	        	  	        }
+	                   }
+	        	 	
+	        	        //SuffixNode is only '$'
+	            	 	
+	                	 if(cst.depth(cst.sl(CurrentNode))-cst.depth(cst.parent(cst.sl(CurrentNode)))==1){
+	        	 	
+	                	  	TempSuffixNode=cst.parent(cst.sl(CurrentNode));
+	        	 	
+	        	           	while(cst.parent(TempSuffixNode)!=cst.root()){
+	        	 	
+	        	          	  InfixNode=cst.parent(TempSuffixNode);		        	          	  	        	           	    	        	           
+	        	            	find_overabundant_words(seq, PrefixNode, CurrentNode, InfixNode, TempSuffixNode);
+	        	            	TempSuffixNode=cst.parent(TempSuffixNode);
+	        	 	
+	        	          	}
+  	 	   
+	        	         }
+	        	 
+	                }//end if(cst.parent(cst.sl(NodeChild2))!=cst.root())
+		          			          	
+		          }//end if((cst.is_leaf(NodeChild2)==1)&&(cst.depth(NodeChild2)>3))
+	                
+	        }//end for
+	            
+	    }//end if((cst.is_leaf(NodeChild1)==0)&&(cst.depth(NodeChild1)==1))
+	         
+  }//end for
+	   
+	            
+	while(DFSall!=0){
+		
+	     auto DFSallnode = DFSunvisitedall[DFSall];
+			
+	     DFSall--;
+			
+			 PrefixNode = DFSallnode;
+			 
+			 TempPrefixNode = PrefixNode;
+		   
+		   InfixNode = cst.sl(PrefixNode);
+		   
+		   TempInfixNode = InfixNode;
+			
+			 for(auto num_degree_all_3 = cst.degree(PrefixNode); num_degree_all_3>0; num_degree_all_3--){
+		
+		       auto NodeChild3 = cst.select_child(PrefixNode, num_degree_all_3);
+		   
+		       CurrentNode = NodeChild3;
+		       
+		       //CurrentNode is a leaf
+		        
+		       if((cst.is_leaf(CurrentNode)==1)&&(((cst.depth(CurrentNode))-(cst.depth(PrefixNode)))>1)){
+	        	
+	             //SuffixNode is not only '$'
+	        	
+	        	   if(cst.depth(cst.sl(CurrentNode))-cst.depth(cst.parent(cst.sl(CurrentNode)))>1){
+	        	 	
+	                TempSuffixNode=cst.sl(CurrentNode);
+	        	 	
+	        	      while(cst.parent(TempSuffixNode)!=InfixNode){
+	        	 	
+	        	         	TempPrefixNode=CurrentNode;
+	        	         	TempInfixNode=cst.parent(TempSuffixNode);    
+	        	          find_overabundant_words(seq, TempPrefixNode, CurrentNode, TempInfixNode, TempSuffixNode);
+	        	          TempSuffixNode=cst.parent(TempSuffixNode);
+	        	 	
+	        	  	  }
+	        	  	  
+	        	  	  if(cst.parent(TempSuffixNode)==InfixNode){
+                    
+                     	find_overabundant_words(seq, PrefixNode, CurrentNode, InfixNode, TempSuffixNode);
+	        	            	
+	               	}
+   
+	              }
+	        	 	
+	        	    //SuffixNode is only '$'
+	            	 	
+	              if(cst.depth(cst.sl(CurrentNode))-cst.depth(cst.parent(cst.sl(CurrentNode)))==1){
+	        	 	
+	                 TempSuffixNode=cst.parent(cst.sl(CurrentNode));
+	        	 	
+	        	          while(cst.parent(TempSuffixNode)!=InfixNode){
+	        	 	
+	        	           	TempPrefixNode=CurrentNode;
+	        	          	TempInfixNode=cst.parent(TempSuffixNode);         	        	          	 
+	        	            find_overabundant_words(seq, TempPrefixNode, CurrentNode, TempInfixNode, TempSuffixNode);
+	        	            TempSuffixNode=cst.parent(TempSuffixNode);
+	        	 	
+	        	  	      }
+	        	  	      
+	        	  	      if(cst.parent(TempSuffixNode)==InfixNode){
+
+	        	            find_overabundant_words(seq, PrefixNode, CurrentNode, InfixNode, TempSuffixNode);
+	        	            	
+	                    }
+  	 	   
+	        	      }
+	        	       
+	        	   }//end if((cst.is_leaf(CurrentNode)==1)&&(((cst.depth(CurrentNode))-(cst.depth(PrefixNode)))>1))
+	        	   
+	         //CurrentNode is not a leaf
+		        
+		       if(cst.is_leaf(CurrentNode)==0){
+		       	
+		       	  DFSall++;
+		       
+		          DFSunvisitedall[DFSall]=CurrentNode;
+		          
+		          TempSuffixNode=cst.sl(CurrentNode);
+	        	 	
+	        	  while(cst.parent(TempSuffixNode)!=InfixNode){
+	        	 	
+	        	     TempPrefixNode=CurrentNode;
+	        	     TempInfixNode=cst.parent(TempSuffixNode);         	                                       
+	        	     find_overabundant_words(seq, TempPrefixNode, CurrentNode, TempInfixNode, TempSuffixNode);
+	        	     TempSuffixNode=cst.parent(TempSuffixNode);
+	        	 	
+	        	  }
+	        	  
+	        	  if(cst.parent(TempSuffixNode)==InfixNode){
+                
+	        	     find_overabundant_words(seq, PrefixNode, CurrentNode, InfixNode, TempSuffixNode);
+	        	              	
+	            }
+		       	
+		       }//end if(cst.is_leaf(CurrentNode)==0)
+		              
+		    }//end for
+		       
+		}//end while
+		
+}//end inline void compute_all_of_overabundant_words(const node_type &v, unsigned char * seq)
+
+
+inline void find_overabundant_words(unsigned char * seq, const node_type &vp, const node_type &vc, const node_type &vi, const node_type &vs){	
+
+INT findposchar1;		
+INT f1;	
+INT countleafprefix=0;
+INT countleafcurrent=0;
+INT countleafinfix=0;
+INT countleafsuffix=0;
+  
+long double countnodenow1=0.0;
+long double countnodesuffix1=0.0;
+long double countnodeprefix1=0.0;
+long double countnodeinfix1=0.0; 	
+long double max1 = 0.0;
+long double sign1 = 0.0;
+long double result1 = 0.0;
+long double numstd1 = 0.0;          
+
+if(cst.is_leaf(vc)==1){countleafcurrent=1;}
+else{countleafcurrent = cst.size(vc);} 
+	
+if(cst.is_leaf(vp)==1){countleafprefix=1;}
+else{countleafprefix = cst.size(vp);} 
+
+if(cst.is_leaf(vi)==1){countleafinfix=1;}
+else{countleafinfix = cst.size(vi);} 
+
+if(cst.is_leaf(vs)==1){countleafsuffix=1;}
+else{countleafsuffix = cst.size(vs);}                                 
+                      
+countnodenow1 = countleafcurrent;	
+countnodesuffix1 = countleafsuffix;	
+countnodeprefix1 = countleafprefix;	
+countnodeinfix1 = countleafinfix;  
+
+sign1 = (long double)(sqrt((countnodeprefix1*countnodesuffix1)/countnodeinfix1)); 
+if(sign1 > 1.0){max1=sign1;}else{max1=1.0;}	
+result1 = (long double)(countnodenow1-(long double)((countnodeprefix1*countnodesuffix1)/countnodeinfix1)); 
+if(result1==0.0){numstd1=0.0;}
+else{numstd1 = (long double)(result1/max1);}	
+if(numt <= numstd1){	
+   findposchar1=0;
+   findposchar1=cst.sn(cst.leftmost_leaf(vc));
+   for(f1=0; f1<((cst.depth(vi))+2);f1++){coutfdall[f1]=seq[f1+findposchar1];}		
+fprintf ( out_fd, "%s....", (char *) coutfdall);
+fprintf ( out_fd, "std: %LF\n", numstd1); 
+memset((char *)coutfdall, 0, nnnn);
+}
+	
+}
+

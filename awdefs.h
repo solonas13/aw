@@ -80,6 +80,8 @@ inline INT nodesuffix(const node_type &v);
 inline INT nodeprefix(const node_type &v);
 inline INT nodeinfix(const node_type &v);
 inline void compute_all_of_occuring_avoided_words(const node_type &v, unsigned char * seq);	
+inline void compute_all_of_overabundant_words(const node_type &v, unsigned char * seq);	
+inline void find_overabundant_words(unsigned char * seq, const node_type &vp, const node_type &vc, const node_type &vi, const node_type &vs);
 
 unsigned int compute_maw ( unsigned char * seq, unsigned char * seq_id, struct TSwitch sw, TMaw ** Occ, INT * NOcc );
 unsigned char Mapping( int a );

@@ -33,7 +33,7 @@ static struct option long_options[] =
    { "threshold",               required_argument, NULL, 't' },
    { "absent",                  required_argument, NULL, 'A' },
    { "reverse",                 required_argument, NULL, 'r' },
-   { "common",                  required_argument, NULL, 'c' },
+   { "words-class",             required_argument, NULL, 'w' },
    { "help",                    no_argument,       NULL, 'h' },
    { NULL,                      0,                 NULL, 0   }
  };
@@ -62,7 +62,7 @@ int decode_switches ( int argc, char * argv [], struct TSwitch * sw )
    sw -> c                              = 0;
    args = 0;
 
-   while ( ( opt = getopt_long ( argc, argv, "a:i:o:k:t:r:A:c:h", long_options, &oi ) ) != - 1 )
+   while ( ( opt = getopt_long ( argc, argv, "a:i:o:k:t:r:A:w:h", long_options, &oi ) ) != - 1 )
     {
       switch ( opt )
        {
@@ -121,7 +121,7 @@ int decode_switches ( int argc, char * argv [], struct TSwitch * sw )
            sw -> r = val;
            break;
 
-         case 'c':
+         case 'w':
            val = strtol ( optarg, &ep, 10 );
            if ( optarg == ep )
             {
@@ -156,15 +156,13 @@ void usage ( void )
                      "                                      for protein  sequences. \n" );
    fprintf ( stdout, "  -i, --input-file          <str>     (Multi)FASTA input filename.\n" );
    fprintf ( stdout, "  -o, --output-file         <str>     Output filename.\n" );
-   fprintf ( stdout, "  -t, --threshold           <dbl>     The threshold (typical: -3.0).\n");
+   fprintf ( stdout, "  -t, --threshold           <dbl>     The threshold.\n");
    fprintf ( stdout, " Optional:\n" );
-   fprintf ( stdout, "  -k, --length              <int>     Fixed length of words (default: no fixed).\n");
-   fprintf ( stdout, "  -A, --absent              <int>     `1' to check also for absent avoided words\n"
-                     "                                      or `0' otherwise (default: 0).\n"
-                     "                                      This option cannot be used with `-c 1'.\n" );
-   fprintf ( stdout, "  -c, --common              <int>     `1' to check for common words instead of\n"
-                     "                                      avoided or `0' otherwise (default: 0).\n"
-                     "                                      This option can only be used with `-k <int>'.\n" );
+   fprintf ( stdout, "  -w, --words-class         <int>     `0' to check for AVOIDED words or `1' to\n"
+                     "                                      check for OVERABUNDANT (default: 0).\n");
+   fprintf ( stdout, "  -k, --length              <int>     Fixed length of words (default: search all).\n");
+   fprintf ( stdout, "  -A, --absent              <int>     `1' to check also for ABSENT AVOIDED words\n"
+                     "                                      or `0' otherwise (default: 0).\n" );
    fprintf ( stdout, "  -r, --reverse             <int>     `1' to check for the reverse complement or\n"
                      "                                      `0' otherwise (default: 0).\n" );
  }
