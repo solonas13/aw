@@ -1,12 +1,12 @@
 AW: Avoided Words
 ===
 
-<b>Description</b>: AW is an implementation of a linear-time and linear-space algorithm to compute <b>all</b> avoided words in a given DNA or proteins sequence. The definitions used for <b>expectation</b> and <b>variance</b> are described and biologically justified in: 
+<b>Description</b>: AW is an implementation of a linear-time and linear-space algorithm to compute <b>all avoided words</b> in a given DNA or proteins sequence. The definitions used for <b>expectation</b> and <b>variance</b> are described and biologically justified in: 
 
 ```
 V. Brendel, J.S. Beckmann, and E.N. Trifonov: 
 Linguistics of nucleotide sequences: morphology and comparison of vocabularies.
-Journal of Biomolecular Structure and Dynamics 4(1), 11–21 (1986).
+Journal of Biomolecular Structure and Dynamics 4(1), 11-21 (1986).
 ```
 
 <b>Installation</b>: To compile AW, please follow the instructions given in file INSTALL.
