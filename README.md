@@ -18,15 +18,13 @@ Journal of Biomolecular Structure and Dynamics 4(1), 11-21 (1986).
                                       for protein  sequences. 
   -i, --input-file          <str>     (Multi)FASTA input filename.
   -o, --output-file         <str>     Output filename.
-  -t, --threshold           <dbl>     The threshold (typical: -3.0).
+  -t, --threshold           <dbl>     The threshold.
  Optional:
-  -k, --length              <int>     Fixed length of words (default: no fixed).
-  -A, --absent              <int>     `1' to check also for absent avoided words
+  -w, --words-class         <int>     `0' to check for AVOIDED words or `1' to
+                                      check for OVERABUNDANT (default: 0).
+  -k, --length              <int>     Fixed length of words (default: search all).
+  -A, --absent              <int>     `1' to check also for ABSENT AVOIDED words
                                       or `0' otherwise (default: 0).
-                                      This option cannot be used with `-c 1'.
-  -c, --common              <int>     `1' to check for common words instead of
-                                      avoided or `0' otherwise (default: 0).
-                                      This option can only be used with `-k <int>'.
   -r, --reverse             <int>     `1' to check for the reverse complement or
                                       `0' otherwise (default: 0).
 ```
