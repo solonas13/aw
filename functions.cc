@@ -69,7 +69,7 @@ char * coutfdall;
 ///////////////////////////////////
 class stackinfo{
 public:
-	int i,j; 
+	INT i,j; 
 	long double stdvalue;
 	
 };
