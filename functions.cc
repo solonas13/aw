@@ -66,6 +66,19 @@ char * coutfd;
 char * coutfd1;
 char * coutfdall;
 
+///////////////////////////////////
+class stackinfo{
+public:
+	int i,j; 
+	long double stdvalue;
+	
+};
+	
+stack <stackinfo> stackoverabundant;
+stackinfo stacktemp;
+INT longestoveraboundant=0;
+///////////////////////////////////
+
 unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TSwitch sw )
 {
 	double start, end;
@@ -88,6 +101,7 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 	end = gettime();
 	fprintf( stderr, " Compressed Suffix Tree construction: %lf secs\n", end - start);
 	
+	start = gettime();
 	/* Compute all of AWs */
 	if ( sw . k == 0 )
 	{
@@ -112,9 +126,18 @@ unsigned int compute_aw ( unsigned char * seq, unsigned char * seq_id, struct TS
 		fprintf ( out_fd, "t = %LF \n", numt );
 		fprintf ( out_fd, ".............................................\n");
 		fprintf ( out_fd, "Overabundant Words: \n" );
-		coutfdall=(char*)calloc(n,sizeof(char));
+		//coutfdall=(char*)calloc(n,sizeof(char));
 		DFSunvisitedall=(node_type*)calloc(n,sizeof(node_type));
-		compute_all_of_overabundant_words(cst.root(), seq);	
+		compute_all_of_overabundant_words(cst.root(), seq);			
+		coutfdall=(char*)calloc(longestoveraboundant,sizeof(char));
+		while(!stackoverabundant.empty()){
+			stacktemp=stackoverabundant.top();	
+			stackoverabundant.pop();
+			memcpy(coutfdall, &seq[stacktemp.i],stacktemp.j);	
+      			fprintf ( out_fd, "%s....", (char *) coutfdall);
+      			fprintf ( out_fd, "std: %LF\n", stacktemp.stdvalue); 
+      			memset((char *)coutfdall, 0, longestoveraboundant);			
+		}		
 		free(coutfdall);
 		free(DFSunvisitedall);
 		end = gettime();
@@ -1737,10 +1760,19 @@ else{numstd1 = (long double)(result1/max1);}
 if(numt <= numstd1){	
    findposchar1=0;
    findposchar1=cst.sn(cst.leftmost_leaf(vc));
-   for(f1=0; f1<((cst.depth(vi))+2);f1++){coutfdall[f1]=seq[f1+findposchar1];}		
-fprintf ( out_fd, "%s....", (char *) coutfdall);
-fprintf ( out_fd, "std: %LF\n", numstd1); 
-memset((char *)coutfdall, 0, nnnn);
+   
+//for(f1=0; f1<((cst.depth(vi))+2);f1++){coutfdall[f1]=seq[f1+findposchar1];}	
+//memcpy(coutfdall, &seq[findposchar1],cst.depth(vi)+2);	
+//fprintf ( out_fd, "%s....", (char *) coutfdall);
+//fprintf ( out_fd, "std: %LF\n", numstd1); 
+//memset((char *)coutfdall, 0, nnnn);
+
+stacktemp.i=findposchar1;
+stacktemp.j=cst.depth(vi)+2;
+stacktemp.stdvalue=numstd1;
+stackoverabundant.push(stacktemp);
+if(longestoveraboundant<(stacktemp.j)){longestoveraboundant=stacktemp.j;}
+
 }
 	
 }
