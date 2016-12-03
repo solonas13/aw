@@ -29,7 +29,7 @@ Journal of Biomolecular Structure and Dynamics 4(1), 11-21 (1986).
                                       `0' otherwise (default: 0).
 ```
 
-<b>Citation</b>:
+<b>Citations</b>:
 
 ```
 Y. Almirantis, P. Charalampopoulos, J. Gao, C. S. Iliopoulos, M. Mohamed, S. P. Pissis, D. Polychronopoulos: 
