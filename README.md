@@ -35,5 +35,9 @@ Journal of Biomolecular Structure and Dynamics 4(1), 11-21 (1986).
 Y. Almirantis, P. Charalampopoulos, J. Gao, C. S. Iliopoulos, M. Mohamed, S. P. Pissis, D. Polychronopoulos: 
 Optimal Computation of Avoided Words. 
 WABI 2016: 1-13
+
+Y. Almirantis, P. Charalampopoulos, J. Gao, C. S. Iliopoulos, M. Mohamed, S. P. Pissis, D. Polychronopoulos: 
+Optimal Computation of Overabundant Words. 
+(in preparation)
 ```
 <b>License</b>: GNU GPLv3 License; Copyright (C) 2016 Jia Gao and Solon P. Pissis
